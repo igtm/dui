@@ -288,68 +288,19 @@ pub fn render(frame: &mut ratatui::Frame, app: &App) {
     let layout = Layout::default()
         .direction(Direction::Vertical)
         .constraints([
-            Constraint::Length(3),
             Constraint::Min(10),
             Constraint::Length(2),
             Constraint::Length(1),
         ])
         .split(root);
 
-    render_header(frame, layout[0], app, theme);
-    render_main(frame, layout[1], app, theme);
-    render_status(frame, layout[2], app, theme);
-    render_footer(frame, layout[3], app, theme);
+    render_main(frame, layout[0], app, theme);
+    render_status(frame, layout[1], app, theme);
+    render_footer(frame, layout[2], app, theme);
 
     if app.confirm_remove {
         render_remove_dialog(frame, centered_rect(58, 5, root), theme);
     }
-}
-
-fn render_header(frame: &mut ratatui::Frame, area: Rect, app: &App, theme: Theme) {
-    let title = app
-        .selected_container()
-        .map(|container| {
-            format!(
-                "dui  {}  {}  {}",
-                container.name,
-                container.project.as_deref().unwrap_or("standalone"),
-                container.service.as_deref().unwrap_or("-")
-            )
-        })
-        .unwrap_or_else(|| "dui  container-first Docker TUI".into());
-
-    let filters = format!(
-        "stopped:{}  project:{}  focus:{}",
-        if app.show_stopped { "on" } else { "off" },
-        app.project_filter.as_deref().unwrap_or("all"),
-        match app.focus {
-            Focus::Containers => "containers",
-            Focus::Detail => "detail",
-        }
-    );
-
-    let block = Block::default()
-        .title(Line::from(vec![
-            Span::styled(
-                " dui ",
-                Style::default()
-                    .fg(theme.background)
-                    .bg(theme.accent)
-                    .add_modifier(Modifier::BOLD),
-            ),
-            Span::raw(" "),
-            Span::styled(
-                title,
-                Style::default().fg(theme.text).add_modifier(Modifier::BOLD),
-            ),
-        ]))
-        .title_alignment(ratatui::layout::Alignment::Left)
-        .title_top(filters)
-        .borders(Borders::ALL)
-        .border_style(Style::default().fg(theme.border))
-        .border_type(BorderType::Rounded)
-        .style(Style::default().bg(theme.background));
-    frame.render_widget(block, area);
 }
 
 fn render_main(frame: &mut ratatui::Frame, area: Rect, app: &App, theme: Theme) {

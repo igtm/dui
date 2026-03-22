@@ -819,7 +819,6 @@ impl App {
         let outer = Layout::default()
             .direction(Direction::Vertical)
             .constraints([
-                Constraint::Length(3),
                 Constraint::Min(10),
                 Constraint::Length(2),
                 Constraint::Length(1),
@@ -828,7 +827,7 @@ impl App {
         let columns = Layout::default()
             .direction(Direction::Horizontal)
             .constraints([Constraint::Percentage(44), Constraint::Percentage(56)])
-            .split(outer[1]);
+            .split(outer[0]);
         let detail_sections = Layout::default()
             .direction(Direction::Vertical)
             .constraints([Constraint::Length(3), Constraint::Min(8)])

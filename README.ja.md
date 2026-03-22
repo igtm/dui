@@ -11,6 +11,20 @@ images / networks / volumes ではなく、container と container logs を主�
 - overview / env vars / ports / mounts / health の構造化 inspect 表示
 - start/stop、restart、remove を keyboard-first で操作
 
+## Install
+
+GitHub から Cargo で install:
+
+```bash
+cargo install --git https://github.com/igtm/dui.git --locked
+```
+
+local checkout から install:
+
+```bash
+cargo install --path . --locked
+```
+
 ## 実行
 
 ```bash

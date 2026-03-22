@@ -11,6 +11,20 @@ It keeps the main screen focused on containers instead of splitting attention ac
 - Structured inspect views for overview, env vars, ports, mounts, and health
 - Keyboard-first lifecycle actions: start or stop, restart, and remove with confirmation
 
+## Install
+
+Install from GitHub with Cargo:
+
+```bash
+cargo install --git https://github.com/igtm/dui.git --locked
+```
+
+Install from a local checkout:
+
+```bash
+cargo install --path . --locked
+```
+
 ## Run
 
 ```bash
