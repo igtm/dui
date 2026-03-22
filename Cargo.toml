@@ -1,0 +1,25 @@
+[package]
+name = "dui"
+version = "0.1.0"
+edition = "2024"
+
+[dependencies]
+anyhow = "1.0.100"
+arboard = "3.6.1"
+base64 = "0.22.1"
+bollard = { version = "0.20.2", features = ["chrono"] }
+chrono = { version = "0.4.42", default-features = false, features = ["clock"] }
+clap = { version = "4.5.48", features = ["derive"] }
+crossterm = "0.29.0"
+dirs = "6.0.0"
+futures-util = "0.3.31"
+ratatui = "0.29.0"
+regex = "1.11.3"
+serde = { version = "1.0.228", features = ["derive"] }
+serde_json = "1.0.145"
+tokio = { version = "1.48.0", features = ["full"] }
+toml = "0.9.8"
+textwrap = "0.16.2"
+
+[dev-dependencies]
+tempfile = "3.23.0"

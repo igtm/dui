@@ -1,0 +1,12 @@
+theme = "graphite"
+show_stopped_by_default = false
+log_backlog_lines = 400
+show_timestamps = true
+
+[keymap]
+quit = "q"
+copy = "y"
+toggle_stopped = "a"
+start_stop = "s"
+restart = "r"
+remove = "D"
