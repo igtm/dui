@@ -2,7 +2,9 @@ use std::collections::BTreeMap;
 
 use crossterm::event::{KeyCode, KeyEvent, KeyModifiers, MouseButton, MouseEvent, MouseEventKind};
 use ratatui::layout::{Constraint, Direction, Layout, Rect};
+use ratatui::text::Line;
 
+use crate::ansi::{chunks_to_line, parse_ansi, plain_text, wrap_chunks};
 use crate::config::RuntimeConfig;
 use crate::docker::{ContainerAction, DockerCommand, DockerEvent};
 use crate::model::{
@@ -71,7 +73,8 @@ pub(crate) struct InputState {
 #[derive(Clone, Debug, PartialEq, Eq)]
 pub struct VisibleLogRow {
     pub entry_index: usize,
-    pub text: String,
+    pub plain_text: String,
+    pub line: Line<'static>,
 }
 
 #[derive(Clone, Copy, Debug, PartialEq, Eq)]
@@ -1315,12 +1318,14 @@ impl LogView {
         let width = width.max(1);
 
         for (entry_index, entry) in filtered.iter().enumerate().skip(self.scroll_top) {
-            let rendered = entry.display(self.show_timestamps);
+            let rendered = entry.display_raw(self.show_timestamps);
+            let chunks = parse_ansi(&rendered);
             if self.wrap {
-                for segment in textwrap::wrap(&rendered, width) {
+                for wrapped in wrap_chunks(&chunks, width) {
                     rows.push(VisibleLogRow {
                         entry_index,
-                        text: segment.into_owned(),
+                        plain_text: plain_text(&wrapped),
+                        line: chunks_to_line(wrapped),
                     });
                     if rows.len() >= height {
                         return rows;
@@ -1329,7 +1334,8 @@ impl LogView {
             } else {
                 rows.push(VisibleLogRow {
                     entry_index,
-                    text: rendered,
+                    plain_text: plain_text(&chunks),
+                    line: chunks_to_line(chunks),
                 });
                 if rows.len() >= height {
                     return rows;
@@ -1767,8 +1773,23 @@ mod tests {
         logs.ensure_visible(2);
         let rows = logs.visible_rows(2, 40);
         assert_eq!(rows.len(), 2);
-        assert_eq!(rows[0].text, "beta");
-        assert_eq!(rows[1].text, "gamma");
+        assert_eq!(rows[0].plain_text, "beta");
+        assert_eq!(rows[1].plain_text, "gamma");
+    }
+
+    #[test]
+    fn log_view_visible_rows_preserve_plain_text_when_ansi_wrapped() {
+        let mut logs = LogView::new(true, 100);
+        logs.append(vec![LogEntry::parse(
+            "stdout",
+            "\u{1b}[36mabcdef\u{1b}[0m\n",
+        )]);
+        logs.wrap = true;
+        let rows = logs.visible_rows(2, 3);
+
+        assert_eq!(rows.len(), 2);
+        assert_eq!(rows[0].plain_text, "abc");
+        assert_eq!(rows[1].plain_text, "def");
     }
 
     #[test]

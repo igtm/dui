@@ -28,7 +28,7 @@ curl -fsSL https://raw.githubusercontent.com/igtm/dui/main/install.sh | sh -s --
 Install a specific release:
 
 ```bash
-curl -fsSL https://raw.githubusercontent.com/igtm/dui/main/install.sh | sh -s -- -v=v0.0.1
+curl -fsSL https://raw.githubusercontent.com/igtm/dui/main/install.sh | sh -s -- -v=v0.0.2
 ```
 
 Install from GitHub with Cargo:

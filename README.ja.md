@@ -28,7 +28,7 @@ curl -fsSL https://raw.githubusercontent.com/igtm/dui/main/install.sh | sh -s --
 特定 version を入れる:
 
 ```bash
-curl -fsSL https://raw.githubusercontent.com/igtm/dui/main/install.sh | sh -s -- -v=v0.0.1
+curl -fsSL https://raw.githubusercontent.com/igtm/dui/main/install.sh | sh -s -- -v=v0.0.2
 ```
 
 GitHub から Cargo で install:

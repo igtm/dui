@@ -437,7 +437,7 @@ fn render_logs(frame: &mut ratatui::Frame, area: Rect, app: &App, theme: Theme) 
     } else {
         rows.iter()
             .map(|row| {
-                let line = highlight_search(row.text.clone(), &app.logs.search_query, theme);
+                let line = highlight_search(row.line.clone(), &row.plain_text, &app.logs.search_query, theme);
                 let mut item = ListItem::new(line);
                 let in_multi = selected_range
                     .map(|(start, end)| row.entry_index >= start && row.entry_index <= end)
@@ -621,29 +621,54 @@ fn titled_block(title: &'static str, focused: bool, theme: Theme, style: Style) 
         .style(style)
 }
 
-fn highlight_search(content: String, query: &str, theme: Theme) -> Line<'static> {
+fn highlight_search(line: Line<'static>, plain_text: &str, query: &str, theme: Theme) -> Line<'static> {
     if query.trim().is_empty() {
-        return Line::from(content);
+        return line;
     }
 
-    let haystack = content.to_ascii_lowercase();
+    let haystack = plain_text.to_ascii_lowercase();
     let needle = query.to_ascii_lowercase();
-    if let Some(index) = haystack.find(&needle) {
-        let end = index + needle.len();
-        return Line::from(vec![
-            Span::raw(content[..index].to_string()),
-            Span::styled(
-                content[index..end].to_string(),
-                Style::default()
-                    .bg(theme.accent)
-                    .fg(theme.background)
-                    .add_modifier(Modifier::BOLD),
-            ),
-            Span::raw(content[end..].to_string()),
-        ]);
+    let Some(index) = haystack.find(&needle) else {
+        return line;
+    };
+    let end = index + needle.len();
+    let highlight = Style::default()
+        .bg(theme.accent)
+        .add_modifier(Modifier::BOLD);
+
+    let mut cursor = 0;
+    let mut spans = Vec::new();
+
+    for span in line.spans {
+        let content = span.content.into_owned();
+        let span_end = cursor + content.len();
+
+        if span_end <= index || cursor >= end {
+            spans.push(Span::styled(content, span.style));
+            cursor = span_end;
+            continue;
+        }
+
+        let local_start = index.saturating_sub(cursor).min(content.len());
+        let local_end = end.saturating_sub(cursor).min(content.len());
+
+        if local_start > 0 {
+            spans.push(Span::styled(content[..local_start].to_string(), span.style));
+        }
+        if local_start < local_end {
+            spans.push(Span::styled(
+                content[local_start..local_end].to_string(),
+                span.style.patch(highlight),
+            ));
+        }
+        if local_end < content.len() {
+            spans.push(Span::styled(content[local_end..].to_string(), span.style));
+        }
+
+        cursor = span_end;
     }
 
-    Line::from(content)
+    Line::from(spans)
 }
 
 fn render_vertical_scrollbar(

@@ -4,6 +4,8 @@ use anyhow::{Context, Result};
 use regex::Regex;
 use serde_json::{Map, Value};
 
+use crate::ansi::strip_ansi;
+
 #[derive(Clone, Debug, PartialEq, Eq)]
 pub struct ContainerRecord {
     pub id: String,
@@ -55,6 +57,7 @@ pub struct LogEntry {
     pub stream: String,
     pub timestamp: Option<String>,
     pub message: String,
+    pub plain_message: String,
 }
 
 impl ContainerRecord {
@@ -260,24 +263,36 @@ impl LogEntry {
             Regex::new(r"^(?P<ts>\d{4}-\d{2}-\d{2}T[^\s]+)\s(?P<msg>.*)$").expect("regex compiles");
 
         if let Some(captures) = timestamp_regex.captures(&trimmed) {
+            let message = captures
+                .name("msg")
+                .map(|value| value.as_str().to_string())
+                .unwrap_or_default();
             return Self {
                 stream: stream.into(),
                 timestamp: captures.name("ts").map(|value| value.as_str().to_string()),
-                message: captures
-                    .name("msg")
-                    .map(|value| value.as_str().to_string())
-                    .unwrap_or_default(),
+                plain_message: strip_ansi(&message),
+                message,
             };
         }
 
         Self {
             stream: stream.into(),
             timestamp: None,
+            plain_message: strip_ansi(&trimmed),
             message: trimmed,
         }
     }
 
     pub fn display(&self, show_timestamps: bool) -> String {
+        if show_timestamps {
+            if let Some(timestamp) = &self.timestamp {
+                return format!("{timestamp} {}", self.plain_message);
+            }
+        }
+        self.plain_message.clone()
+    }
+
+    pub fn display_raw(&self, show_timestamps: bool) -> String {
         if show_timestamps {
             if let Some(timestamp) = &self.timestamp {
                 return format!("{timestamp} {}", self.message);
