@@ -13,6 +13,24 @@ It keeps the main screen focused on containers instead of splitting attention ac
 
 ## Install
 
+Install the latest GitHub Release on Linux or macOS:
+
+```bash
+curl -fsSL https://raw.githubusercontent.com/igtm/dui/main/install.sh | sh
+```
+
+Install to a custom directory:
+
+```bash
+curl -fsSL https://raw.githubusercontent.com/igtm/dui/main/install.sh | sh -s -- -b=$HOME/.local/bin
+```
+
+Install a specific release:
+
+```bash
+curl -fsSL https://raw.githubusercontent.com/igtm/dui/main/install.sh | sh -s -- -v=v0.0.1
+```
+
 Install from GitHub with Cargo:
 
 ```bash

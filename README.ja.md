@@ -13,6 +13,24 @@ images / networks / volumes ではなく、container と container logs を主�
 
 ## Install
 
+Linux / macOS で最新の GitHub Release を install:
+
+```bash
+curl -fsSL https://raw.githubusercontent.com/igtm/dui/main/install.sh | sh
+```
+
+配置先を変える:
+
+```bash
+curl -fsSL https://raw.githubusercontent.com/igtm/dui/main/install.sh | sh -s -- -b=$HOME/.local/bin
+```
+
+特定 version を入れる:
+
+```bash
+curl -fsSL https://raw.githubusercontent.com/igtm/dui/main/install.sh | sh -s -- -v=v0.0.1
+```
+
 GitHub から Cargo で install:
 
 ```bash
