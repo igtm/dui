@@ -1,5 +1,5 @@
 theme = "graphite"
-show_stopped_by_default = false
+show_stopped_by_default = true
 log_backlog_lines = 400
 show_timestamps = true
 

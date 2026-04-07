@@ -46,8 +46,10 @@ cargo install --path . --locked
 ## Run
 
 ```bash
-cargo run -- --all
+cargo run
 ```
+
+Stopped and exited containers are visible by default. Press `a` to hide or show stopped containers, or set `show_stopped_by_default = false` in your config to start with only active containers.
 
 Optional startup flags:
 
@@ -59,7 +61,7 @@ You can also build and run the binary directly:
 
 ```bash
 cargo build
-target/debug/dui --all
+target/debug/dui
 ```
 
 ## Keybindings
@@ -67,7 +69,7 @@ target/debug/dui --all
 - `q`: quit
 - `Tab`: switch focus between container list and detail pane
 - `1-6`: switch detail tabs
-- `a`: toggle stopped containers
+- `a`: hide or show stopped containers
 - `y`: copy the current selection
 - `s`: start or stop selected container
 - `r`: restart selected container
