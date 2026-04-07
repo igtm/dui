@@ -556,6 +556,23 @@ mod tests {
     use super::*;
     use serde_json::json;
 
+    fn test_container(id: &str, name: &str, state: &str) -> ContainerRecord {
+        ContainerRecord {
+            id: id.into(),
+            short_id: id.into(),
+            name: name.into(),
+            image: "img".into(),
+            command: String::new(),
+            state: state.into(),
+            status: state.into(),
+            project: Some("demo".into()),
+            service: Some(name.into()),
+            ports: Vec::new(),
+            health: None,
+            created: None,
+        }
+    }
+
     #[test]
     fn parses_summary_json() {
         let value = json!({
@@ -623,6 +640,22 @@ mod tests {
 
         sort_containers(&mut containers);
         assert_eq!(containers[0].name, "running");
+    }
+
+    #[test]
+    fn filters_stopped_containers_based_on_visibility_flag() {
+        let containers = vec![
+            test_container("a", "api", "running"),
+            test_container("b", "worker", "exited"),
+        ];
+
+        let active_only = apply_container_filters(&containers, false, None, None);
+        assert_eq!(active_only.len(), 1);
+        assert_eq!(active_only[0].name, "api");
+
+        let with_stopped = apply_container_filters(&containers, true, None, None);
+        assert_eq!(with_stopped.len(), 2);
+        assert_eq!(with_stopped[1].name, "worker");
     }
 
     #[test]

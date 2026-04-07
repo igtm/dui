@@ -29,7 +29,7 @@ impl Default for AppConfig {
     fn default() -> Self {
         Self {
             theme: ThemeName::Graphite,
-            show_stopped_by_default: false,
+            show_stopped_by_default: true,
             log_backlog_lines: 400,
             show_timestamps: true,
             keymap: KeymapConfig::default(),
@@ -143,6 +143,12 @@ quit = "ctrl+c"
     }
 
     #[test]
+    fn defaults_to_showing_stopped_containers() {
+        let config = AppConfig::default();
+        assert!(config.show_stopped_by_default);
+    }
+
+    #[test]
     fn runtime_config_respects_cli_overrides() {
         let cli = Cli {
             config: None,
@@ -162,5 +168,24 @@ quit = "ctrl+c"
             runtime.docker_host.as_deref(),
             Some("unix:///tmp/docker.sock")
         );
+    }
+
+    #[test]
+    fn runtime_config_allows_config_to_hide_stopped_containers() {
+        let cli = Cli {
+            config: None,
+            host: None,
+            all: false,
+            project: None,
+            container: None,
+            theme: None,
+        };
+        let config = AppConfig {
+            show_stopped_by_default: false,
+            ..AppConfig::default()
+        };
+
+        let runtime = RuntimeConfig::from_sources(cli, config);
+        assert!(!runtime.show_stopped_by_default);
     }
 }

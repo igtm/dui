@@ -46,8 +46,10 @@ cargo install --path . --locked
 ## 実行
 
 ```bash
-cargo run -- --all
+cargo run
 ```
+
+stopped / exited container はデフォルトで表示されます。`a` で stopped container の表示/非表示を切り替えられます。起動時は active container だけにしたい場合は config で `show_stopped_by_default = false` を設定してください。
 
 起動時に filter や focus を渡すこともできます。
 
@@ -59,7 +61,7 @@ binary を直接起動する場合:
 
 ```bash
 cargo build
-target/debug/dui --all
+target/debug/dui
 ```
 
 ## キーバインド
@@ -67,7 +69,7 @@ target/debug/dui --all
 - `q`: 終了
 - `Tab`: container list と detail pane の focus 切り替え
 - `1-6`: detail tab 切り替え
-- `a`: stopped container の表示切り替え
+- `a`: stopped container の表示/非表示切り替え
 - `y`: 現在の選択を copy
 - `s`: 選択 container の start / stop
 - `r`: restart

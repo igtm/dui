@@ -17,7 +17,7 @@ pub struct Cli {
     #[arg(long)]
     pub host: Option<String>,
 
-    /// Start with stopped containers visible.
+    /// Force stopped containers visible at startup, even if config hides them.
     #[arg(long)]
     pub all: bool,
 
